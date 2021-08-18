@@ -46,6 +46,8 @@ export default {
                 rating: null,
                 artists: [{ value: null }],
                 tags: [{ value: null }],
+                createdAt: null,
+                updatedAt: null,
             },
             tags: {},
             artists: {},
@@ -104,10 +106,14 @@ export default {
             }
 
             let songIndex = data.songs.findIndex(song => song.videoId === this.song.videoId);
+            let currentTime = moment().unix();
             if (songIndex === -1) {
+                this.song.createdAt = currentTime;
+                this.song.updatedAt = currentTime;
                 this.songExists = true;
                 data.songs.push(this.song);
             } else {
+                this.song.updatedAt = currentTime;
                 data.songs[songIndex] = this.song;
             }
 
