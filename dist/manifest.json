@@ -1,0 +1,25 @@
+{
+    "name": "Youtube songs extension",
+    "version": "1.0.0",
+    "description": "Store videos by tags and artists",
+    "permissions": [
+        "storage",
+        "webRequest",
+        "webRequestBlocking",
+        "http://*/",
+        "https://*/"
+    ],
+    "icons": {
+        "16": "images/song-icon.jpg",
+        "48": "images/song-icon.jpg",
+        "128": "images/song-icon.jpg"
+    },
+    "background": {
+        "scripts": ["js/background.js"]
+    },
+    "browser_action": {
+        "default_popup": "popup.html",
+        "default_icon": "images/song-icon.jpg"
+    },
+    "manifest_version": 2
+}
