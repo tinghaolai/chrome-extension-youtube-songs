@@ -36,6 +36,12 @@ body {
         -webkit-appearance: none;
         margin: 0;
     }
+
+    &:disabled {
+        background-color: #cccccc !important;
+        border-color: #cccccc !important;
+        color: #909399 !important;
+    }
 }
 
 .itemName {
@@ -47,6 +53,7 @@ body {
 .itemNameContainer {
     display: flex;
     margin-top: 20px;
+    margin-bottom: 2px;
 }
 
 .submitBtn {
