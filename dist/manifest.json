@@ -21,5 +21,6 @@
         "default_popup": "popup.html",
         "default_icon": "images/song-icon.jpg"
     },
+    "options_page": "options.html",
     "manifest_version": 2
 }
