@@ -36,6 +36,11 @@
 </template>
 <script>
 import moment from 'moment';
+import toastr from 'toastr';
+
+toastr.options = {
+    positionClass: "toast-top-center",
+};
 
 export default {
     data() {
@@ -102,8 +107,8 @@ export default {
                 });
             });
         },
-        displayMessages(message) {
-            alert(message);
+        displayMessages(message, type = 'success') {
+            toastr[type](message);
         },
         getStoreSongs(data) {
             if (!data.songs) {
