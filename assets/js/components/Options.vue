@@ -135,6 +135,18 @@
                 if (data.songs) {
                     this.songs = data.songs;
                     this.currentSongs = this.songs.slice(0, 20);
+
+                    _axios.get('https://www.googleapis.com/youtube/v3/videos?part=id%2C+snippet&' +
+                        'id='+ this.currentSongs.map(song => song.videoId).join(',') +
+                        '&key=AIzaSyD2y_-mWi5zduMPd2m-jY2kQpRhRqH98TY').then((response) => {
+                        this.currentSongs = this.currentSongs.map((song, index) => {
+                            song.apiData = response.data.items[index];
+
+                            return song;
+                        });
+                    }).catch(error => {
+                        console.log(error);
+                    });
                 }
 
                 if (data.tags) {
@@ -150,20 +162,5 @@
                 }
             });
         },
-        watch: {
-            currentSongs: function (val) {
-                _axios.get('https://www.googleapis.com/youtube/v3/videos?part=id%2C+snippet&' +
-                    'id='+ this.currentSongs.map(song => song.videoId).join(',') +
-                    '&key=AIzaSyD2y_-mWi5zduMPd2m-jY2kQpRhRqH98TY').then((response) => {
-                    this.currentSongs = this.currentSongs.map((song, index) => {
-                        song.apiData = response.data.items[index];
-
-                        return song;
-                    });
-                }).catch(error => {
-                    console.log(error);
-                });
-            }
-        }
     }
 </script>
