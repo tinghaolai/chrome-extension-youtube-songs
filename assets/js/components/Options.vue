@@ -100,7 +100,7 @@
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                        <button type="button" class="btn btn-primary" @click="StoreYoutubeApiKey">Save changes</button>
+                        <button type="button" class="btn btn-primary" @click="storeYoutubeApiKey">Save changes</button>
                     </div>
                 </div>
             </div>
@@ -152,7 +152,7 @@
             submitForm() {
                 console.log(this.currentSongs);
             },
-            StoreYoutubeApiKey() {
+            storeYoutubeApiKey() {
                 this.settings.youtubeApiKey = this.youtubeApiKeyInput;
                 chrome.storage.sync.set({
                     settings: this.settings,
