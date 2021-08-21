@@ -68,15 +68,18 @@
                         <button class="btn btn-primary" @click="submitForm">Search</button>
                     </div>
                 </div>
-                <div class="col-8">
+                <div class="col-8 overflow-auto vh-100">
                     <div class="fw-bold">Songs</div>
-                    <div v-for="song in currentSongs">
-                        <img v-if="song.apiData"
-                            :src="song.apiData.snippet.thumbnails.default.url"
-                             class="img-thumbnail"
-                             alt="thumbnails not found">
+                    <div v-for="song in currentSongs" src="/test">
+                        <a :href="'https://www.youtube.com/watch?v=' + song.videoId" target="_blank">
+                            <img v-if="song.apiData"
+                                 :src="song.apiData.snippet.thumbnails.default.url"
+                                 class="img-thumbnail"
+                                 alt="thumbnails not found">
+                        </a>
                         {{ (song.songName) ? song.songName : ((song.apiData) ? song.apiData.snippet.title : 'name not found') }}
                     </div>
+                    <infinite-loading @infinite="loadingMoreSongs"></infinite-loading>
                 </div>
             </div>
         </div>
@@ -115,6 +118,7 @@
                 tags: [],
                 artists: [],
                 songs: [],
+                filteredSongs: [],
                 searchForm: {
                     tags: [],
                     artists: [],
@@ -127,10 +131,16 @@
                     uri: null,
                     fileName: null
                 },
+                loadingSongs: true,
+                pagination: {
+                    perPage: 20,
+                    currentPage: 1,
+                }
             }
         },
         methods: {
             submitForm() {
+                console.log(this.currentSongs);
             },
             StoreYoutubeApiKey() {
                 this.settings.youtubeApiKey = this.youtubeApiKeyInput;
@@ -146,24 +156,48 @@
 
                 document.getElementById('exportJson').click();
             },
+            loadingMoreSongs(state) {
+                if (this.loadingSongs) {
+                    return;
+                }
+
+                if (this.currentSongs.length >= this.filteredSongs.length) {
+                    state.complete();
+
+                    return;
+                }
+
+                let fetchingSongs = JSON.parse(JSON.stringify(this.filteredSongs.slice(
+                    (this.pagination.currentPage - 1) * 20,
+                    this.pagination.currentPage * 20
+                )));
+
+                _axios.get('https://www.googleapis.com/youtube/v3/videos?part=id%2C+snippet&' +
+                    'id='+ fetchingSongs.map(song => song.videoId).join(',') +
+                    '&key=AIzaSyD2y_-mWi5zduMPd2m-jY2kQpRhRqH98TY').then((response) => {
+                    fetchingSongs = fetchingSongs.map((song, index) => {
+                        song.apiData = response.data.items[index];
+
+                        return song;
+                    });
+
+                    this.currentSongs = this.currentSongs.concat(fetchingSongs);
+                    if (this.currentSongs.length >= this.filteredSongs.length) {
+                        state.complete();
+                    } else {
+                        state.loaded();
+                    }
+                }).catch(error => {
+                    console.log(error);
+                });
+            },
         },
         created() {
             chrome.storage.sync.get(['songs', 'tags', 'artists', 'settings'], data => {
                 if (data.songs) {
                     this.songs = data.songs;
-                    this.currentSongs = JSON.parse(JSON.stringify(this.songs.slice(0, 20)));
-
-                    _axios.get('https://www.googleapis.com/youtube/v3/videos?part=id%2C+snippet&' +
-                        'id='+ this.currentSongs.map(song => song.videoId).join(',') +
-                        '&key=AIzaSyD2y_-mWi5zduMPd2m-jY2kQpRhRqH98TY').then((response) => {
-                        this.currentSongs = this.currentSongs.map((song, index) => {
-                            song.apiData = response.data.items[index];
-
-                            return song;
-                        });
-                    }).catch(error => {
-                        console.log(error);
-                    });
+                    this.filteredSongs = data.songs;
+                    this.loadingSongs = false;
                 }
 
                 if (data.tags) {
