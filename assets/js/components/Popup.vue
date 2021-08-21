@@ -52,10 +52,12 @@ export default {
             tags: {},
             artists: {},
             songExists: false,
+            currentTabId: null,
         }
     },
     created() {
         chrome.tabs.query({ currentWindow: true, active: true }, tabs => {
+            this.currentTabId = tabs[0].id;
             let videoId = new URL(tabs[0].url).searchParams.get('v');
             if (videoId) {
                 this.song.videoId = videoId;
@@ -94,6 +96,9 @@ export default {
                     artists: this.getStoreOptions(data, 'artists'),
                 }, () => {
                     this.displayMessages('success');
+
+                    chrome.browserAction.setIcon({ path: '../images/song-icon-green.jpg', tabId: this.currentTabId});
+
                 });
             });
         },
