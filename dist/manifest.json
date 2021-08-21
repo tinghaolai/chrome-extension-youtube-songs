@@ -6,6 +6,7 @@
         "storage",
         "webRequest",
         "webRequestBlocking",
+        "scripting",
         "http://*/",
         "https://*/"
     ],
