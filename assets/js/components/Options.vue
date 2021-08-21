@@ -6,7 +6,11 @@
                     Delete All Songs
                 </div>
                 <div class="col">
-                    Export
+                    <button type="button"
+                            class="btn btn-primary"
+                            @click="exportJson">
+                        Export json
+                    </button>
                 </div>
                 <div class="col">
                     <button type="button"
@@ -95,11 +99,13 @@
             </div>
         </div>
 
-
+        <a :href="exportJsonSetting.uri" :download="exportJsonSetting.fileName" style="display: none" id="exportJson">
+        </a>
     </div>
 </template>
 <script>
     import 'bootstrap';
+    import moment from 'moment';
     import _axios from 'axios';
 
     export default {
@@ -117,6 +123,10 @@
                     youtubeApiKey: null,
                 },
                 youtubeApiKeyInput: null,
+                exportJsonSetting: {
+                    uri: null,
+                    fileName: null
+                },
             }
         },
         methods: {
@@ -128,13 +138,20 @@
                     settings: this.settings,
                 }).then(() => {
                 });
-            }
+            },
+            exportJson() {
+                this.exportJsonSetting.uri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(JSON.stringify(this.songs));
+                this.exportJsonSetting.fileName = 'youtube-songs-export-v0.0.1-length-' + this.songs.length +
+                    '-' + moment().unix() + '.json';
+
+                document.getElementById('exportJson').click();
+            },
         },
         created() {
             chrome.storage.sync.get(['songs', 'tags', 'artists', 'settings'], data => {
                 if (data.songs) {
                     this.songs = data.songs;
-                    this.currentSongs = this.songs.slice(0, 20);
+                    this.currentSongs = JSON.parse(JSON.stringify(this.songs.slice(0, 20)));
 
                     _axios.get('https://www.googleapis.com/youtube/v3/videos?part=id%2C+snippet&' +
                         'id='+ this.currentSongs.map(song => song.videoId).join(',') +
