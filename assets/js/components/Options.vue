@@ -187,7 +187,6 @@
                 this.settings.youtubeApiKey = this.youtubeApiKeyInput;
                 chrome.storage.sync.set({
                     settings: this.settings,
-                }).then(() => {
                 });
             },
             exportJson() {
@@ -217,7 +216,7 @@
 
                 _axios.get('https://www.googleapis.com/youtube/v3/videos?part=id%2C+snippet&' +
                     'id='+ fetchingSongs.map(song => song.videoId).join(',') +
-                    '&key=AIzaSyD2y_-mWi5zduMPd2m-jY2kQpRhRqH98TY').then((response) => {
+                    '&key=' + this.settings.youtubeApiKey).then((response) => {
                     fetchingSongs = fetchingSongs.map((song, index) => {
                         song.apiData = response.data.items[index];
 
@@ -270,6 +269,7 @@
                     this.artists = data.artists;
                 }
 
+                console.log(data.settings);
                 if (data.settings) {
                     this.settings = data.settings;
                 }
