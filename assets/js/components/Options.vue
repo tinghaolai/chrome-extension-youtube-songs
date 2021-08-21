@@ -24,16 +24,20 @@
             </div>
             <div class="row px-2 position-relative mb-5">
                 <div class="col col-12 text-center rounded py-5 text-white fw-bold fs-2" id="titleBar">
-                    {{ songs.length }} songs found
+                    {{ filteredSongs.length }} songs found
                 </div>
                 <div class="row justify-content-center position-absolute top-100  translate-middle-y">
                     <div class="col col-8 text-center rounded border bg-white py-3">
                         <div class="row">
                             <div class="col col-8">
-                                <input type="text" class="form-control" placeholder="search song name">
+                                <input type="text"
+                                       class="form-control"
+                                       placeholder="search song name"
+                                       v-model="songNameSearchInput"
+                                       @keyup.enter="songNameSearching">
                             </div>
                             <div class="col col-4">
-                                <button class="btn btn-primary">Search</button>
+                                <button class="btn btn-primary" @click="songNameSearching">Search</button>
                             </div>
                         </div>
                     </div>
@@ -110,6 +114,11 @@
     import 'bootstrap';
     import moment from 'moment';
     import _axios from 'axios';
+    import toastr from 'toastr';
+
+    toastr.options = {
+        positionClass: "toast-bottom-right",
+    };
 
     export default {
         data() {
@@ -135,7 +144,8 @@
                 pagination: {
                     perPage: 20,
                     currentPage: 1,
-                }
+                },
+                songNameSearchInput: null,
             }
         },
         methods: {
@@ -156,13 +166,15 @@
 
                 document.getElementById('exportJson').click();
             },
-            loadingMoreSongs(state) {
+            loadingMoreSongs(state = null) {
                 if (this.loadingSongs) {
                     return;
                 }
 
                 if (this.currentSongs.length >= this.filteredSongs.length) {
-                    state.complete();
+                    if (state) {
+                        state.complete();
+                    }
 
                     return;
                 }
@@ -182,15 +194,34 @@
                     });
 
                     this.currentSongs = this.currentSongs.concat(fetchingSongs);
-                    if (this.currentSongs.length >= this.filteredSongs.length) {
-                        state.complete();
-                    } else {
-                        state.loaded();
+                    if (state) {
+                        if (this.currentSongs.length >= this.filteredSongs.length) {
+                            state.complete();
+                        } else {
+                            state.loaded();
+                        }
                     }
                 }).catch(error => {
                     console.log(error);
                 });
             },
+            songNameSearching() {
+                if (!this.songNameSearchInput) {
+                    toastr.error('please enter valid value');
+
+                    return;
+                }
+
+                let regex = new RegExp(this.songNameSearchInput, 'gi');
+                this.filteredSongs = this.songs.filter(song => (song.songName) && (song.songName.match(regex)));
+                this.currentSongs = [];
+
+                if (this.filteredSongs.length === 0) {
+                    toastr.error('Not found!');
+                }
+
+                this.loadingMoreSongs();
+            }
         },
         created() {
             chrome.storage.sync.get(['songs', 'tags', 'artists', 'settings'], data => {
