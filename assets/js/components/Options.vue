@@ -37,7 +37,7 @@
                                        @keyup.enter="songNameSearching">
                             </div>
                             <div class="col col-4">
-                                <button class="btn btn-primary" @click="songNameSearching">Search</button>
+                                <button class="btn btn-primary" @click="songNameSearching" :disabled="songNameSearchInput === null || songNameSearchInput === ''">Search</button>
                             </div>
                         </div>
                     </div>
@@ -69,7 +69,7 @@
                         </label>
                     </div>
                     <div class="row">
-                        <button class="btn btn-primary" @click="submitForm">Search</button>
+                        <button class="btn btn-primary" @click="submitForm" :disabled="!searchForm.tags.length && !searchForm.artists.length">Search</button>
                     </div>
                 </div>
                 <div class="col-8 overflow-auto vh-100">
@@ -150,7 +150,38 @@
         },
         methods: {
             submitForm() {
-                console.log(this.currentSongs);
+                // todo need optimize when songs amount a large
+                this.filteredSongs = this.songs.filter(song => {
+                    let foundSong = false;
+                    if (this.searchForm.tags.length) {
+                        this.searchForm.tags.forEach(searchTag => {
+                            song.tags.forEach(songTag => {
+                                if (songTag.value === searchTag) {
+                                    foundSong = true;
+                                }
+                            })
+                        });
+                    }
+
+                    if (this.searchForm.artists.length) {
+                        this.searchForm.artists.forEach(searchArtist => {
+                            song.artists.forEach(songArtist => {
+                                if (songArtist.value === searchArtist) {
+                                    foundSong = true;
+                                }
+                            })
+                        });
+                    }
+
+                    return foundSong;
+                });
+
+                this.currentSongs = [];
+                if (this.filteredSongs.length === 0) {
+                    toastr.error('Not found!');
+                }
+
+                this.loadingMoreSongs();
             },
             storeYoutubeApiKey() {
                 this.settings.youtubeApiKey = this.youtubeApiKeyInput;
