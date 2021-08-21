@@ -66,8 +66,12 @@
                 </div>
                 <div class="col-8">
                     <div class="fw-bold">Songs</div>
-                    <div v-for="song in songs">
-                        {{ song.videoId }}
+                    <div v-for="song in currentSongs">
+                        <img v-if="song.apiData"
+                            :src="song.apiData.snippet.thumbnails.default.url"
+                             class="img-thumbnail"
+                             alt="thumbnails not found">
+                        {{ (song.songName) ? song.songName : ((song.apiData) ? song.apiData.snippet.title : 'name not found') }}
                     </div>
                 </div>
             </div>
@@ -96,10 +100,12 @@
 </template>
 <script>
     import 'bootstrap';
+    import _axios from 'axios';
 
     export default {
         data() {
             return {
+                currentSongs: [],
                 tags: [],
                 artists: [],
                 songs: [],
@@ -128,6 +134,7 @@
             chrome.storage.sync.get(['songs', 'tags', 'artists', 'settings'], data => {
                 if (data.songs) {
                     this.songs = data.songs;
+                    this.currentSongs = this.songs.slice(0, 20);
                 }
 
                 if (data.tags) {
@@ -143,5 +150,20 @@
                 }
             });
         },
+        watch: {
+            currentSongs: function (val) {
+                _axios.get('https://www.googleapis.com/youtube/v3/videos?part=id%2C+snippet&' +
+                    'id='+ this.currentSongs.map(song => song.videoId).join(',') +
+                    '&key=AIzaSyD2y_-mWi5zduMPd2m-jY2kQpRhRqH98TY').then((response) => {
+                    this.currentSongs = this.currentSongs.map((song, index) => {
+                        song.apiData = response.data.items[index];
+
+                        return song;
+                    });
+                }).catch(error => {
+                    console.log(error);
+                });
+            }
+        }
     }
 </script>
