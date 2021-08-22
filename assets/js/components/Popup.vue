@@ -83,6 +83,13 @@ export default {
                     if (currentSong) {
                         this.songExists = true;
                         this.song = currentSong;
+                        if (!this.song.tags || this.song.tags.length === 0) {
+                            this.song.tags = [{ value: null }];
+                        }
+
+                        if (!this.song.artists || this.song.artists.length === 0) {
+                            this.song.artists = [{ value: null }];
+                        }
                     }
                 });
             }
@@ -103,7 +110,6 @@ export default {
                     this.displayMessages('success');
 
                     chrome.browserAction.setIcon({ path: '../images/song-icon-green.jpg', tabId: this.currentTabId});
-
                 });
             });
         },
@@ -121,10 +127,10 @@ export default {
                 this.song.createdAt = currentTime;
                 this.song.updatedAt = currentTime;
                 this.songExists = true;
-                data.songs.push(this.song);
+                data.songs.push(this.convertSongEmptyData());
             } else {
                 this.song.updatedAt = currentTime;
-                data.songs[songIndex] = this.song;
+                data.songs[songIndex] = this.convertSongEmptyData();
             }
 
             return data.songs;
@@ -141,6 +147,13 @@ export default {
             });
 
             return data[type];
+        },
+        convertSongEmptyData() {
+            let song = JSON.parse(JSON.stringify(this.song));
+            song.tags = song.tags.filter(tag => tag.value !== null && tag.value !== '');
+            song.artists = song.artists.filter(artist => artist.value !== null && artist.value !== '');
+
+            return song;
         },
     }
 }
