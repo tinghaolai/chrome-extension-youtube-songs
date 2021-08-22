@@ -83,7 +83,7 @@
                         </a>
                         {{ (song.songName) ? song.songName : ((song.apiData) ? song.apiData.snippet.title : 'name not found') }}
                     </div>
-                    <infinite-loading @infinite="loadingMoreSongs"></infinite-loading>
+                    <infinite-loading v-if="!loadingSongs" @infinite="loadingMoreSongs"></infinite-loading>
                 </div>
             </div>
         </div>
@@ -255,12 +255,6 @@
         },
         created() {
             chrome.storage.sync.get(['songs', 'tags', 'artists', 'settings'], data => {
-                if (data.songs) {
-                    this.songs = data.songs;
-                    this.filteredSongs = data.songs;
-                    this.loadingSongs = false;
-                }
-
                 if (data.tags) {
                     this.tags = data.tags;
                 }
@@ -269,9 +263,14 @@
                     this.artists = data.artists;
                 }
 
-                console.log(data.settings);
                 if (data.settings) {
                     this.settings = data.settings;
+                }
+
+                if (data.songs) {
+                    this.songs = data.songs;
+                    this.filteredSongs = data.songs;
+                    this.loadingSongs = false;
                 }
             });
         },
