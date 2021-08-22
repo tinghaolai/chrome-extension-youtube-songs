@@ -76,6 +76,8 @@ export default {
                     }
 
                     if (!data.songs) {
+                        this.transTitleInfoToSongForm(tabs[0].title);
+
                         return;
                     }
 
@@ -90,6 +92,8 @@ export default {
                         if (!this.song.artists || this.song.artists.length === 0) {
                             this.song.artists = [{ value: null }];
                         }
+                    } else {
+                        this.transTitleInfoToSongForm(tabs[0].title);
                     }
                 });
             }
@@ -154,6 +158,21 @@ export default {
             song.artists = song.artists.filter(artist => artist.value !== null && artist.value !== '');
 
             return song;
+        },
+        transTitleInfoToSongForm(title) {
+            this.song.songName = title;
+            let regex;
+            Object.keys(this.artists).forEach(artist => {
+                regex = new RegExp(artist, 'gi');
+                if (title.match(regex)) {
+                    this.song.artists.push({ value: artist });
+                }
+            });
+
+            if (this.song.artists.length > 1) {
+                this.song.artists = this.song.artists.filter(artist => (artist.value) || (artist.value === 0));
+            }
+
         },
     }
 }
