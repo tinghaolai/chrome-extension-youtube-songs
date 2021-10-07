@@ -51,8 +51,8 @@
                         <input class="form-check-input"
                                type="checkbox"
                                :value="artistName"
-                               id="artistSearchCheck" v-model="searchForm.artists">
-                        <label class="form-check-label" for="artistSearchCheck">
+                               :id="'artistSearchCheck' + artistName" v-model="searchForm.artists">
+                        <label class="form-check-label" :for="'artistSearchCheck' + artistName">
                             {{ artistName }}
                         </label>
                     </div>
