@@ -37,7 +37,7 @@
                                        @keyup.enter="songNameSearching">
                             </div>
                             <div class="col col-4">
-                                <button class="btn btn-primary" @click="songNameSearching" :disabled="songNameSearchInput === null || songNameSearchInput === ''">Search</button>
+                                <button class="btn btn-primary" @click="songNameSearching">Search</button>
                             </div>
                         </div>
                     </div>
@@ -237,19 +237,16 @@
             },
             songNameSearching() {
                 if (!this.songNameSearchInput) {
-                    toastr.error('please enter valid value');
-
-                    return;
+                    this.filteredSongs = this.songs;
+                } else {
+                    let regex = new RegExp(this.songNameSearchInput, 'gi');
+                    this.filteredSongs = this.songs.filter(song => (song.songName) && (song.songName.match(regex)));
+                    if (this.filteredSongs.length === 0) {
+                        toastr.error('Not found!');
+                    }
                 }
 
-                let regex = new RegExp(this.songNameSearchInput, 'gi');
-                this.filteredSongs = this.songs.filter(song => (song.songName) && (song.songName.match(regex)));
                 this.currentSongs = [];
-
-                if (this.filteredSongs.length === 0) {
-                    toastr.error('Not found!');
-                }
-
                 this.loadingMoreSongs();
             }
         },
