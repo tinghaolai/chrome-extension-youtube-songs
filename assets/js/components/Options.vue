@@ -15,6 +15,14 @@
                 <div class="col">
                     <button type="button"
                             class="btn btn-primary"
+                            @click="executeImportJson">
+                        Import json
+                    </button>
+                    <input style="display: none;" type="file" id="jsonUpload" @change="importJson">
+                </div>
+                <div class="col">
+                    <button type="button"
+                            class="btn btn-primary"
                             data-bs-toggle="modal"
                             data-bs-target="#youtubeApiKeyModal"
                             @click="youtubeApiKeyInput = settings.youtubeApiKey">
@@ -248,7 +256,46 @@
 
                 this.currentSongs = [];
                 this.loadingMoreSongs();
-            }
+            },
+            importJson() {
+                var jsonUpload = document.getElementById("jsonUpload").files[0];
+                const reader = new FileReader();
+                reader.onerror = error => reject(error);
+                reader.onload = event => {
+                    const videoIdMapping = this.songs.reduce((obj, value, index) => {
+                        if (value.videoId) {
+                            obj[value.videoId] = index;
+                        }
+
+                        return obj;
+                    }, {});
+
+                    console.log(videoIdMapping);
+
+                    JSON.parse(event.target.result).forEach(song => {
+                        if (song.videoId && !videoIdMapping[song.videoId]) {
+                            this.songs.push(song);
+                        }
+                    });
+
+                    chrome.storage.sync.set({
+                        songs: this.songs,
+                    }, () => {
+                        toastr.success('success');
+                        this.resetSongs();
+                    });
+                };
+
+                reader.readAsText(jsonUpload);
+            },
+            resetSongs() {
+                this.filteredSongs = this.songs;
+                this.currentSongs = [];
+                this.loadingMoreSongs();
+            },
+            executeImportJson() {
+                document.getElementById('jsonUpload').click();
+            },
         },
         created() {
             chrome.storage.sync.get(['songs', 'tags', 'artists', 'settings'], data => {
