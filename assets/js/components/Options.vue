@@ -29,6 +29,15 @@
                         Youtube Api Key
                     </button>
                 </div>
+                <div class="col">
+                    <button type="button"
+                            class="btn btn-primary"
+                            data-bs-toggle="modal"
+                            data-bs-target="#externalUrlModal"
+                            @click="externalUrlInput = settings.externalUrl">
+                        External Api Route
+                    </button>
+                </div>
             </div>
             <div class="row px-2 position-relative mb-5">
                 <div class="col col-12 text-center rounded py-5 text-white fw-bold fs-2" id="titleBar">
@@ -83,13 +92,22 @@
                 <div class="col-8 overflow-auto vh-100">
                     <div class="fw-bold">Songs</div>
                     <div v-for="song in currentSongs" src="/test">
-                        <a :href="'https://www.youtube.com/watch?v=' + song.videoId" target="_blank">
-                            <img v-if="song.apiData"
-                                 :src="song.apiData.snippet.thumbnails.default.url"
-                                 class="img-thumbnail"
-                                 alt="thumbnails not found">
-                        </a>
-                        {{ (song.songName) ? song.songName : ((song.apiData) ? song.apiData.snippet.title : 'name not found') }}
+                        <div class="container">
+                            <div class="row">
+                                <div class="col">
+                                    <a :href="'https://www.youtube.com/watch?v=' + song.videoId" target="_blank">
+                                        <img v-if="song.apiData"
+                                             :src="song.apiData.snippet.thumbnails.default.url"
+                                             class="img-thumbnail"
+                                             alt="thumbnails not found">
+                                    </a>
+                                    {{ (song.songName) ? song.songName : ((song.apiData) ? song.apiData.snippet.title : 'name not found') }}
+                                </div>
+                                <div class="col" v-if="settings.externalUrl">
+                                    <iframe :src="settings.externalUrl + song.videoId" frameborder="0" style="width: 160px; height: 60px;"></iframe>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                     <infinite-loading v-if="!loadingSongs" @infinite="loadingMoreSongs"></infinite-loading>
                 </div>
@@ -109,6 +127,24 @@
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                         <button type="button" class="btn btn-primary" @click="storeYoutubeApiKey">Save changes</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal fade" id="externalUrlModal" tabindex="-1" aria-labelledby="externalUrlModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="externalUrlModalLabel">External url Setting</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <input type="text" class="form-control" placeholder="" v-model="externalUrlInput">
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-primary" @click="storeExternalUrl">Save changes</button>
                     </div>
                 </div>
             </div>
@@ -142,8 +178,10 @@
                 },
                 settings: {
                     youtubeApiKey: null,
+                    externalUrl: null,
                 },
                 youtubeApiKeyInput: null,
+                externalUrlInput: null,
                 exportJsonSetting: {
                     uri: null,
                     fileName: null
@@ -193,6 +231,12 @@
             },
             storeYoutubeApiKey() {
                 this.settings.youtubeApiKey = this.youtubeApiKeyInput;
+                chrome.storage.sync.set({
+                    settings: this.settings,
+                });
+            },
+            storeExternalUrl() {
+                this.settings.externalUrl = this.externalUrlInput;
                 chrome.storage.sync.set({
                     settings: this.settings,
                 });
