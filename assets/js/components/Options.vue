@@ -90,6 +90,9 @@
                     </div>
                 </div>
                 <div class="col-8 overflow-auto vh-100">
+                    <div>
+                        <button class="btn btn-primary" @click="generateSongList">Generate Songs list</button>
+                    </div>
                     <div class="fw-bold">Songs</div>
                     <div v-for="song in currentSongs" src="/test">
                         <div class="container">
@@ -339,6 +342,10 @@
             },
             executeImportJson() {
                 document.getElementById('jsonUpload').click();
+            },
+            generateSongList() {
+                let videoIds = this.filteredSongs.map(song => song.videoId).join(',');
+                window.open('http://www.youtube.com/watch_videos?video_ids=' + videoIds, '_blank');
             },
         },
         created() {
