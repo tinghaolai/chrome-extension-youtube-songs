@@ -79,9 +79,9 @@
                         <input class="form-check-input"
                                type="checkbox"
                                :value="tagName"
-                               id="tagSearchCheck"
+                               :id="'tagSearchCheck' + tagName"
                                v-model="searchForm.tags">
-                        <label class="form-check-label" for="tagSearchCheck">
+                        <label class="form-check-label" :for="'tagSearchCheck' + tagName">
                             {{ tagName }}
                         </label>
                     </div>
