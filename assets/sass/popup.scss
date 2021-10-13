@@ -99,3 +99,15 @@ body {
     height: 16px;
     margin-left: 8px;
 }
+
+.el-input__inner {
+    background-color: #242324 !important;
+    border-width: 0 !important;
+    line-height: 0 !important;
+    height: 100% !important;
+    padding: 0 !important;
+}
+
+.el-select__caret {
+    display: none !important;
+}

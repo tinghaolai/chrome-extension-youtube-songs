@@ -17,18 +17,40 @@
             <div class="itemName">Artists</div>
             <button class="addItemBtn" @click="song.artists.push({ value: null })">add</button>
         </div>
-        <input list="artistLists" class="formInput" type="text" v-for="(artist) in song.artists" v-model="artist.value">
-        <datalist id="artistLists">
-            <option :value="index" v-for="(value, index) in artists"></option>
-        </datalist>
+        <el-select
+                class="formInput"
+                v-for="(artist, index) in song.artists"
+                v-model="artist.value"
+                :key="index"
+                filterable
+                allow-create
+                placeholder="">
+            <el-option
+                    v-for="(value, index) in artists"
+                    :key="index"
+                    :label="index"
+                    :value="index">
+            </el-option>
+        </el-select>
         <div class="itemNameContainer">
             <div class="itemName">Tags</div>
             <button class="addItemBtn" @click="song.tags.push({ value: null })">add</button>
         </div>
-        <input list="tagLists" class="formInput" type="text" v-for="(tag, index) in song.tags" v-model="tag.value">
-        <datalist id="tagLists">
-            <option :value="index" v-for="(value, index) in tags"></option>
-        </datalist>
+        <el-select
+                class="formInput"
+                v-for="(tag, index) in song.tags"
+                v-model="tag.value"
+                :key="index"
+                filterable
+                allow-create
+                placeholder="">
+            <el-option
+                    v-for="(value, index) in tags"
+                    :key="index"
+                    :label="index"
+                    :value="index">
+            </el-option>
+        </el-select>
         <div class="submitBtn">
             <button @click="storeSong" :disabled="!song.videoId">{{ (songExists) ? 'Update' : 'Store' }}</button>
         </div>
