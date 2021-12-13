@@ -269,6 +269,8 @@
                     this.pagination.currentPage * 20
                 )));
 
+                this.pagination.currentPage++;
+
                 _axios.get('https://www.googleapis.com/youtube/v3/videos?part=id%2C+snippet&' +
                     'id='+ fetchingSongs.map(song => song.videoId).join(',') +
                     '&key=' + this.settings.youtubeApiKey).then((response) => {
