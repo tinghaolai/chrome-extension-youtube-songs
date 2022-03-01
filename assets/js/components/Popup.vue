@@ -21,7 +21,7 @@
                 class="formInput"
                 v-for="(artist, index) in song.artists"
                 v-model="artist.value"
-                :key="index"
+                :key="'artist' + index"
                 filterable
                 allow-create
                 placeholder="">
