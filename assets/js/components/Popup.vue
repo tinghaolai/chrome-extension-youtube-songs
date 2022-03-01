@@ -38,17 +38,17 @@
         </div>
         <el-select
                 class="formInput"
-                v-for="(artist, index) in song.artists"
-                v-model="artist.value"
+                v-for="(tag, index) in song.tags"
+                v-model="tag.value"
                 :key="index"
                 filterable
                 allow-create
                 placeholder="">
             <el-option
-                    v-for="(value, artistIndex) in artists"
-                    :key="artistIndex"
-                    :label="artistIndex"
-                    :value="artistIndex">
+                    v-for="(value, tagIndex) in tags"
+                    :key="tagIndex"
+                    :label="tagIndex"
+                    :value="tagIndex">
             </el-option>
         </el-select>
         <div class="submitBtn">
