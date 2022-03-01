@@ -2,7 +2,7 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
         if (changeInfo.url) {
             let videoId = new URL(changeInfo.url).searchParams.get('v');
             if (videoId) {
-                chrome.storage.sync.get('songs', data => {
+                chrome.storage.local.get('songs', data => {
                     if (
                         (data.songs) &&
                         (data.songs.find(song => song.videoId === videoId))

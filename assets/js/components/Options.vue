@@ -234,13 +234,13 @@
             },
             storeYoutubeApiKey() {
                 this.settings.youtubeApiKey = this.youtubeApiKeyInput;
-                chrome.storage.sync.set({
+                chrome.storage.local.set({
                     settings: this.settings,
                 });
             },
             storeExternalUrl() {
                 this.settings.externalUrl = this.externalUrlInput;
-                chrome.storage.sync.set({
+                chrome.storage.local.set({
                     settings: this.settings,
                 });
             },
@@ -327,7 +327,7 @@
                         }
                     });
 
-                    chrome.storage.sync.set({
+                    chrome.storage.local.set({
                         songs: this.songs,
                     }, () => {
                         toastr.success('success');
@@ -351,7 +351,7 @@
             },
         },
         created() {
-            chrome.storage.sync.get(['songs', 'tags', 'artists', 'settings'], data => {
+            chrome.storage.local.get(['songs', 'tags', 'artists', 'settings'], data => {
                 if (data.tags) {
                     this.tags = data.tags;
                 }

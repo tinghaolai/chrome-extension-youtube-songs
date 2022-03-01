@@ -88,7 +88,7 @@ export default {
             let videoId = new URL(tabs[0].url).searchParams.get('v');
             if (videoId) {
                 this.song.videoId = videoId;
-                chrome.storage.sync.get(['songs', 'tags', 'artists'], data => {
+                chrome.storage.local.get(['songs', 'tags', 'artists'], data => {
                     if (data.tags) {
                         this.tags = data.tags;
                     }
@@ -127,8 +127,8 @@ export default {
                 this.displayMessages('value invalid');
             }
 
-            chrome.storage.sync.get(['songs', 'tags', 'artists'], data => {
-                chrome.storage.sync.set({
+            chrome.storage.local.get(['songs', 'tags', 'artists'], data => {
+                chrome.storage.local.set({
                     songs: this.getStoreSongs(data),
                     tags: this.getStoreOptions(data, 'tags'),
                     artists: this.getStoreOptions(data, 'artists'),
